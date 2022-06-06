@@ -26,22 +26,43 @@ const rightArrow = () => {
   calendar?.value.rightArrow()
 }
 const today = new Date()
+// today.setHours(0)
+// today.setMinutes(0)
+// today.setSeconds(0)
+// today.setMilliseconds(0)
 const year = today.getFullYear()
 const month = (today.getMonth() + 1 + '').padStart(2, '0')
 const monthDay = (today.getDate() + '').padStart(2, '0')
 const ty = `${year}-${month}-${monthDay}`
 // 活动
-const activities = reactive([])
+const activities = reactive([
+  {
+    title: "活动一",
+    beginTime: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000),
+    endTime: new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000),
+    color: 'red'
+  },
+  {
+    title: "活动一",
+    beginTime: new Date(today.getTime()),
+    endTime: new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000),
+    color: 'green'
+  },
+  {
+    title: "活动一",
+    beginTime: new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000),
+    endTime: new Date(today.getTime() + 4 * 24 * 60 * 60 * 1000),
+    color: 'blue'
+  }
+])
 // 开始日期
 const startDate = ref(ty)
 // 结束日期
 const endDate = ref(ty)
 // 活动名称
 const activityName = ref(null)
-// 背景颜色
-const bgColor = ref('#ffa1e2')
-// 文字颜色
-const textColor = ref('#000000')
+// 活动颜色
+const color = ref('red')
 // 添加活动
 const addActivity = () => {
   const a = startDate.value.split('-')
@@ -58,9 +79,12 @@ const addActivity = () => {
     title: activityName.value,
     beginTime: aa,
     endTime: bb,
-    bgColor: bgColor.value,
-    textColor: textColor.value
+    color: color.value
   })
+}
+// 点击活动回调
+const onActivityClick = (activity) => {
+  console.log(activity);
 }
 </script>
 
@@ -114,11 +138,18 @@ const addActivity = () => {
         <div>活动名称</div>
         <input style="width:100px" type="text" v-model="activityName" />
         <br />
-        <br />背景颜色
-        <input style="width:100px" type="input" v-model="bgColor" />
         <br />
-        <br />文字颜色
-        <input style="width:100px" type="input" v-model="textColor" />
+        <div>颜色</div>
+        <input type="radio" id="red" value="red" v-model="color" />
+        <label for="red">red</label>
+        <br />
+        <input type="radio" id="blue" value="blue" v-model="color" />
+        <label for="blue">blue</label>
+        <br />
+        <input type="radio" id="green" value="green" v-model="color" />
+        <label for="green">green</label>
+        <br />
+        <br />
         <button @click="addActivity">添加</button>
       </div>
     </div>
@@ -137,6 +168,7 @@ const addActivity = () => {
         :weekOrMonthFlag="weekOrMonthFlag"
         v-model:pWeekdays="pWeekdays"
         :activities="activities"
+        @onActivityClick="onActivityClick"
       ></easy-calendar>
       <!-- +++++++ -->
     </div>

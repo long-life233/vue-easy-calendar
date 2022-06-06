@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, toRaw } from 'vue'
 const props = defineProps({
   time: {
     type: Object,
@@ -34,7 +34,7 @@ const props = defineProps({
 const yearAndMonth = ref(props.time)
 const weekTimeStamp = ref(props.weekFlagTime)
 // const cWeekdays = ref(props.pWeekdays)
-const emit = defineEmits(['update:time', 'update:weekFlagTime', 'update:pWeekdays'])
+const emit = defineEmits(['update:time', 'update:weekFlagTime', 'update:pWeekdays', 'onActivityClick'])
 
 // 将时间设置为今天
 const setToday = () => {
@@ -86,6 +86,16 @@ const getWeekActivity = (weekStart) => {
     if (a.endTime.getTime() < b.endTime.getTime()) return -1
     if (a.endTime.getTime() > b.endTime.getTime()) return 1
     return 0
+  }).map(item => {
+    item.beginTime.setHours(0)
+    item.beginTime.setMinutes(0)
+    item.beginTime.setSeconds(0)
+    item.beginTime.setMilliseconds(0)
+    item.endTime.setHours(0)
+    item.endTime.setMinutes(0)
+    item.endTime.setSeconds(0)
+    item.endTime.setMilliseconds(0)
+    return item
   })
   let topArr = [[], [], [], [], [], [], []] // 每个数组元素代表一天
   for (let i = 0; i < filter.length; i++) {
@@ -140,6 +150,7 @@ const getWeekActivity = (weekStart) => {
     // activity.classes.push(`activity-${activity.color}`)
     activity.classes.push(`offset${startOffset}`)
     activity.classes.push(`span${span}`)
+    activity.classes.push(`activity-${activity.color}`)
     activity.classes.push(`top-${activity.topVal}`)
   }
   return filter
@@ -242,7 +253,7 @@ onMounted(() => {
 
 // 点击活动触发的事件
 const onActivityClick = (activity) => {
-  console.log(activity,'xxx');
+  emit('onActivityClick', toRaw(activity))
 }
 </script>
 
@@ -273,13 +284,13 @@ const onActivityClick = (activity) => {
       <span
         class="activity"
         :class="activity.classes"
-        :style="`top:${(activity.topVal * 35 + 45)}px;background-color:${activity.bgColor};color:${activity.textColor}`"
+        :style="`top:${(activity.topVal * 35 + 45)}px;`"
         v-for="(activity, index3) in getWeekActivity(weekdays[0].date)"
       >{{ activity.title }}</span>
     </div>
     <!-- 月视图日历 -->
     <div v-else>
-      <div style="overflow:auto" class="grid-month" v-for="(floor, index) in visibleCalendar">
+      <div style="overflow:overlay" class="grid-month" v-for="(floor, index) in visibleCalendar">
         <div class="item" v-for="(item, index2) in floor">
           <div class>
             <span
@@ -301,7 +312,7 @@ const onActivityClick = (activity) => {
           @click="onActivityClick(activity)"
           class="activity"
           :class="activity.classes"
-          :style="`top:${(activity.topVal * 35 + 45)}px;background-color:${activity.bgColor};color:black`"
+          :style="`top:${(activity.topVal * 35 + 45)}px;`"
           v-for="(activity, index3) in getWeekActivity(floor[0].date)"
         >{{ activity.title }}</span>
       </div>
@@ -362,9 +373,9 @@ const onActivityClick = (activity) => {
 
 .grid-month {
   position: relative;
-  display: inline-grid;
+  display: grid;
   grid-template-columns: repeat(7, 150px);
-  grid-template-rows: repeat(1, 140px);
+  grid-template-rows: repeat(1, 148px);
   border-left: 0.5px solid #ccc;
 
   &:nth-child(1) {
@@ -399,6 +410,23 @@ const onActivityClick = (activity) => {
   font-weight: 600;
   z-index: 1;
   font-size: 0.8em;
+  &.activity-red {
+    background-color: rgba(236, 73, 73, 0.15);
+    border: 1px solid rgba(236, 73, 73, 0.9);
+    color: rgba(254, 44, 85, 0.9);
+  }
+
+  &.activity-blue {
+    background: rgba(36, 83, 178, 0.15);
+    border: 1px solid rgb(36, 83, 178);
+    color: rgb(36, 83, 178);
+  }
+
+  &.activity-green {
+    background: rgba(0, 230, 118, 0.15);
+    border: 1px solid rgba(0, 230, 118, 1);
+    color: rgba(0, 230, 118, 1);
+  }
   &.begin-activity {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;

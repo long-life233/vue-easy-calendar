@@ -1,6 +1,6 @@
 <script setup>
 import EasyCalendar from './components/EasyCalendar.vue'
-import { ref, onMounted, reactive, computed } from 'vue'
+import { ref, reactive } from 'vue'
 const calendar = ref(null)
 const time = reactive({
   year: new Date().getFullYear(),
@@ -91,15 +91,9 @@ const onActivityClick = (activity) => {
 <template>
   <div style="display:flex;align-items: stretch;height: 1000px;">
     <div style="flex:0 0 auto;width:211px;padding: 30px;">
-      <button
-        :class="weekOrMonthFlag === 'week' ? 'active' : ''"
-        @click="weekOrMonthFlag = 'week'"
-      >周视图</button>
+      <button :class="weekOrMonthFlag === 'week' ? 'active' : ''" @click="weekOrMonthFlag = 'week'">周视图</button>
       &nbsp;&nbsp;
-      <button
-        :class="weekOrMonthFlag === 'month' ? 'active' : ''"
-        @click="weekOrMonthFlag = 'month'"
-      >月视图</button>
+      <button :class="weekOrMonthFlag === 'month' ? 'active' : ''" @click="weekOrMonthFlag = 'month'">月视图</button>
       <br />
       <br />
       <button class="today" v-if="weekOrMonthFlag === 'month'" @click="setToday">今天</button>
@@ -107,17 +101,14 @@ const onActivityClick = (activity) => {
       <br />
       <button class="today" @click="leftArrow">{{ weekOrMonthFlag === 'week' ? '上一周' : '上一月' }}</button>
       &nbsp;&nbsp;
-      <button
-        class="today"
-        @click="rightArrow"
-      >{{ weekOrMonthFlag === 'week' ? '下一周' : '下一月' }}</button>
+      <button class="today" @click="rightArrow">{{ weekOrMonthFlag === 'week' ? '下一周' : '下一月' }}</button>
 
       <br />
       <br />
       <span v-if="weekOrMonthFlag === 'month'">{{ time.year }}年{{ time.month + 1 }}月</span>
       <span v-else>
         {{ pWeekdays[0]?.month + 1 }}月{{ pWeekdays[0]?.monthDay }}日 - {{
-          pWeekdays[6]?.month +
+            pWeekdays[6]?.month +
             1
         }}月{{ pWeekdays[6]?.monthDay }}
       </span>
@@ -157,19 +148,13 @@ const onActivityClick = (activity) => {
       <div style="width:1050px;height: 100px;position: relative;margin-bottom: 20px;">
         <img src="./assets/calendar-bg.png" style="width:100%;height: 100%;object-fit: cover;" />
         <div
-          style="position: absolute;top:0;right:0;bottom:0;left:40px;z-index: 1;display: flex;align-items: center;font-size: 30px;"
-        >活动日历</div>
+          style="position: absolute;top:0;right:0;bottom:0;left:40px;z-index: 1;display: flex;align-items: center;font-size: 30px;">
+          活动日历</div>
       </div>
       <!-- +++++++ -->
-      <easy-calendar
-        ref="calendar"
-        v-model:time="time"
-        v-model:weekFlagTime="weekFlagTime"
-        :weekOrMonthFlag="weekOrMonthFlag"
-        v-model:pWeekdays="pWeekdays"
-        :activities="activities"
-        @onActivityClick="onActivityClick"
-      ></easy-calendar>
+      <easy-calendar ref="calendar" v-model:time="time" v-model:weekFlagTime="weekFlagTime"
+        :weekOrMonthFlag="weekOrMonthFlag" v-model:pWeekdays="pWeekdays" :activities="activities"
+        @onActivityClick="onActivityClick"></easy-calendar>
       <!-- +++++++ -->
     </div>
   </div>
@@ -181,11 +166,12 @@ body {
   padding: 0;
   margin: 0;
 }
+
 div {
   box-sizing: border-box;
 }
-.today {
-}
+
+.today {}
 
 button.active {
   background-color: orange;

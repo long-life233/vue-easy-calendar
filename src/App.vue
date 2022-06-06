@@ -25,22 +25,25 @@ const leftArrow = () => {
 const rightArrow = () => {
   calendar?.value.rightArrow()
 }
-
+const today = new Date()
+const year = today.getFullYear()
+const month = (today.getMonth() + 1 + '').padStart(2, '0')
+const monthDay = (today.getDate() + '').padStart(2, '0')
+const ty = `${year}-${month}-${monthDay}`
 // 活动
 const activities = reactive([])
 // 开始日期
-const startDate = ref(null)
+const startDate = ref(ty)
 // 结束日期
-const endDate = ref(null)
+const endDate = ref(ty)
 // 活动名称
 const activityName = ref(null)
 // 背景颜色
-const bgColor = ref('#fff4f6')
+const bgColor = ref('#ffa1e2')
 // 文字颜色
 const textColor = ref('#000000')
 // 添加活动
 const addActivity = () => {
-  console.log(bgColor.value, 'bgColor');
   const a = startDate.value.split('-')
   const aa = new Date(a[0], a[1] - 1, a[2], 0, 0, 0, 0)
   const b = endDate.value.split('-')
@@ -48,12 +51,15 @@ const addActivity = () => {
   if (aa > bb) {
     return alert('开始日期不能大于结束日期')
   }
+  if (!activityName.value) {
+    return alert('活动名称不能为空')
+  }
   activities.push({
     title: activityName.value,
     beginTime: aa,
     endTime: bb,
     bgColor: bgColor.value,
-    textColor:textColor.value
+    textColor: textColor.value
   })
 }
 </script>

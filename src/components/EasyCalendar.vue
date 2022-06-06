@@ -239,6 +239,11 @@ defineExpose({ setToday, leftArrow, rightArrow, weekdays })
 onMounted(() => {
   emit('update:pWeekdays', weekdays.value)
 })
+
+// 点击活动触发的事件
+const onActivityClick = (activity) => {
+  console.log(activity,'xxx');
+}
 </script>
 
 <template>
@@ -293,6 +298,7 @@ onMounted(() => {
           </div>
         </div>
         <span
+          @click="onActivityClick(activity)"
           class="activity"
           :class="activity.classes"
           :style="`top:${(activity.topVal * 35 + 45)}px;background-color:${activity.bgColor};color:black`"

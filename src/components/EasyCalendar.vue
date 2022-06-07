@@ -33,7 +33,6 @@ const props = defineProps({
 })
 const yearAndMonth = ref(props.time)
 const weekTimeStamp = ref(props.weekFlagTime)
-// const cWeekdays = ref(props.pWeekdays)
 const emit = defineEmits(['update:time', 'update:weekFlagTime', 'update:pWeekdays', 'onActivityClick'])
 
 // 将时间设置为今天
@@ -77,8 +76,9 @@ const changeMonth = (value) => {
 
 // 根据这周第一天获取这周的活动
 const getWeekActivity = (weekStart) => {
+  let filter = toRaw(props.activities)
   // 筛选出来的活动
-  let filter = props.activities.filter(item => {
+  filter = filter.filter(item => {
     return item.beginTime.getTime() <= (weekStart.getTime() + 6 * 24 * 60 * 60 * 1000) && item.endTime.getTime() >= weekStart.getTime()
   }).sort((a, b) => {
     if (a.beginTime.getTime() < b.beginTime.getTime()) return -1 // 如果a的开始时间 大于 b的开始时间，那么a、b就不交换位置
@@ -261,14 +261,9 @@ const onActivityClick = (activity) => {
   <!-- 周一 到 周日 -->
   <div class="week-day">
     <div style="display:flex;align-items:center" v-for="item in weekdays">
-      <span
-        v-if="weekOrMonthFlag === 'week'"
-        :class="item.isToday ? 'item-today' : ''"
-      >{{ item.monthDay }}</span>
-      <span
-        v-if="(item.isSaturday || item.isSunday) && weekOrMonthFlag === 'week'"
-        style="background-color:rgba(254, 44, 85, 0.1);color: rgba(254,44,85,.9);padding: 0 2px;"
-      >{{ item.day }}</span>
+      <span v-if="weekOrMonthFlag === 'week'" :class="item.isToday ? 'item-today' : ''">{{ item.monthDay }}</span>
+      <span v-if="(item.isSaturday || item.isSunday) && weekOrMonthFlag === 'week'"
+        style="background-color:rgba(254, 44, 85, 0.1);color: rgba(254,44,85,.9);padding: 0 2px;">{{ item.day }}</span>
       <span v-else>{{ item.day }}</span>
     </div>
   </div>
@@ -276,45 +271,28 @@ const onActivityClick = (activity) => {
   <div style="display:inline-block;" class="grid-container-wrapper">
     <!-- 周视图日历 -->
     <div v-if="weekOrMonthFlag === 'week'" class="gird-week">
-      <div
-        class="item"
-        :style="`background-color: ${item.isToday ? '#F6F8FA' : ''};`"
-        v-for="(item, index2) in weekdays"
-      ></div>
-      <span
-        class="activity"
-        :class="activity.classes"
-        :style="`top:${(activity.topVal * 35 + 45)}px;`"
-        v-for="(activity, index3) in getWeekActivity(weekdays[0].date)"
-      >{{ activity.title }}</span>
+      <div class="item" :style="`background-color: ${item.isToday ? '#F6F8FA' : ''};`"
+        v-for="(item, index2) in weekdays"></div>
+      <span class="activity" :class="activity.classes" :style="`top:${(activity.topVal * 35 + 45)}px;`"
+        v-for="(activity, index3) in getWeekActivity(weekdays[0].date)">{{ activity.title }}</span>
     </div>
     <!-- 月视图日历 -->
     <div v-else>
       <div style="overflow:overlay" class="grid-month" v-for="(floor, index) in visibleCalendar">
         <div class="item" v-for="(item, index2) in floor">
           <div class>
-            <span
-              :class="[!item.thisMonth ? 'text-grey' : 'text-black', item.isToday ? 'item-today' : '']"
-            >{{ item.monthDay }}</span>
-            <span
-              style="background-color:rgba(254, 44, 85, 0.1);color: rgba(254,44,85,.9);padding: 0 2px;"
-              class="on-right text-weight-bold rounded"
-              v-if="item.isSaturday"
-            >周六</span>
-            <span
-              style="background-color:rgba(254, 44, 85, 0.1);color: rgba(254,44,85,.9);padding: 0 2px;"
-              class="on-right text-weight-bold rounded"
-              v-if="item.isSunday"
-            >周日</span>
+            <span :class="[!item.thisMonth ? 'text-grey' : 'text-black', item.isToday ? 'item-today' : '']">{{
+                item.monthDay
+            }}</span>
+            <span style="background-color:rgba(254, 44, 85, 0.1);color: rgba(254,44,85,.9);padding: 0 2px;"
+              class="on-right text-weight-bold rounded" v-if="item.isSaturday">周六</span>
+            <span style="background-color:rgba(254, 44, 85, 0.1);color: rgba(254,44,85,.9);padding: 0 2px;"
+              class="on-right text-weight-bold rounded" v-if="item.isSunday">周日</span>
           </div>
         </div>
-        <span
-          @click="onActivityClick(activity)"
-          class="activity"
-          :class="activity.classes"
+        <span @click="onActivityClick(activity)" class="activity" :class="activity.classes"
           :style="`top:${(activity.topVal * 35 + 45)}px;`"
-          v-for="(activity, index3) in getWeekActivity(floor[0].date)"
-        >{{ activity.title }}</span>
+          v-for="(activity, index3) in getWeekActivity(floor[0].date)">{{ activity.title }}</span>
       </div>
     </div>
   </div>
@@ -324,18 +302,22 @@ const onActivityClick = (activity) => {
 * {
   box-sizing: border-box;
 }
+
 .my-btn {
   border: 1px solid #ccc;
   border-radius: 2px;
   padding: 4px;
 }
+
 .text-grey {
   color: #9e9e9e;
 }
+
 .text-black {
   color: black;
   font-weight: 700;
 }
+
 .week-day {
   display: grid;
   grid-template-columns: repeat(7, 150px);
@@ -410,6 +392,7 @@ const onActivityClick = (activity) => {
   font-weight: 600;
   z-index: 1;
   font-size: 0.8em;
+
   &.activity-red {
     background-color: rgba(236, 73, 73, 0.15);
     border: 1px solid rgba(236, 73, 73, 0.9);
@@ -427,6 +410,7 @@ const onActivityClick = (activity) => {
     border: 1px solid rgba(0, 230, 118, 1);
     color: rgba(0, 230, 118, 1);
   }
+
   &.begin-activity {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;

@@ -33,6 +33,7 @@ const props = defineProps({
 })
 const yearAndMonth = ref(props.time)
 const weekTimeStamp = ref(props.weekFlagTime)
+const filterActivities = ref(props.activities)
 const emit = defineEmits(['update:time', 'update:weekFlagTime', 'update:pWeekdays', 'onActivityClick'])
 
 // 将时间设置为今天
@@ -76,7 +77,9 @@ const changeMonth = (value) => {
 
 // 根据这周第一天获取这周的活动
 const getWeekActivity = (weekStart) => {
-  let filter = toRaw(props.activities)
+  console.log(123);
+  let filter = toRaw(filterActivities.value)
+  // let filter = filterActivities.value
   // 筛选出来的活动
   filter = filter.filter(item => {
     return item.beginTime.getTime() <= (weekStart.getTime() + 6 * 24 * 60 * 60 * 1000) && item.endTime.getTime() >= weekStart.getTime()
@@ -153,6 +156,7 @@ const getWeekActivity = (weekStart) => {
     activity.classes.push(`activity-${activity.color}`)
     activity.classes.push(`top-${activity.topVal}`)
   }
+  
   return filter
 }
 // 日历中显示的日期

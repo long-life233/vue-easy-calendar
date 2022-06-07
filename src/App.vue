@@ -63,6 +63,8 @@ const endDate = ref(ty)
 const activityName = ref(null)
 // 活动颜色
 const color = ref('red')
+// 日历组件key
+const key = ref(new Date().getTime())
 // 添加活动
 const addActivity = () => {
   const a = startDate.value.split('-')
@@ -81,6 +83,7 @@ const addActivity = () => {
     endTime: bb,
     color: color.value
   })
+  key.value = new Date().getTime()
 }
 // 点击活动回调
 const onActivityClick = (activity) => {
@@ -152,7 +155,7 @@ const onActivityClick = (activity) => {
           活动日历</div>
       </div>
       <!-- +++++++ -->
-      <easy-calendar ref="calendar" v-model:time="time" v-model:weekFlagTime="weekFlagTime"
+      <easy-calendar :key="key" ref="calendar" v-model:time="time" v-model:weekFlagTime="weekFlagTime"
         :weekOrMonthFlag="weekOrMonthFlag" v-model:pWeekdays="pWeekdays" :activities="activities"
         @onActivityClick="onActivityClick"></easy-calendar>
       <!-- +++++++ -->

@@ -33,7 +33,6 @@ const props = defineProps({
 })
 const yearAndMonth = ref(props.time)
 const weekTimeStamp = ref(props.weekFlagTime)
-const filterActivities = ref(props.activities)
 const emit = defineEmits(['update:time', 'update:weekFlagTime', 'update:pWeekdays', 'onActivityClick'])
 
 // 将时间设置为今天
@@ -77,19 +76,11 @@ const changeMonth = (value) => {
 
 // 根据这周第一天获取这周的活动
 const getWeekActivity = (weekStart) => {
-  console.log(123);
-  let filter = toRaw(filterActivities.value)
-  // let filter = filterActivities.value
   // 筛选出来的活动
-  filter = filter.filter(item => {
+  let filter = props.activities.filter(item => {
     return item.beginTime.getTime() <= (weekStart.getTime() + 6 * 24 * 60 * 60 * 1000) && item.endTime.getTime() >= weekStart.getTime()
-  }).sort((a, b) => {
-    if (a.beginTime.getTime() < b.beginTime.getTime()) return -1 // 如果a的开始时间 大于 b的开始时间，那么a、b就不交换位置
-    if (a.beginTime.getTime() > b.beginTime.getTime()) return 1
-    if (a.endTime.getTime() < b.endTime.getTime()) return -1
-    if (a.endTime.getTime() > b.endTime.getTime()) return 1
-    return 0
   }).map(item => {
+    item = { ...item }
     item.beginTime.setHours(0)
     item.beginTime.setMinutes(0)
     item.beginTime.setSeconds(0)
@@ -99,6 +90,12 @@ const getWeekActivity = (weekStart) => {
     item.endTime.setSeconds(0)
     item.endTime.setMilliseconds(0)
     return item
+  }).sort((a, b) => {
+    if (a.beginTime.getTime() < b.beginTime.getTime()) return -1 // 如果a的开始时间 大于 b的开始时间，那么a、b就不交换位置
+    if (a.beginTime.getTime() > b.beginTime.getTime()) return 1
+    if (a.endTime.getTime() < b.endTime.getTime()) return -1
+    if (a.endTime.getTime() > b.endTime.getTime()) return 1
+    return 0
   })
   let topArr = [[], [], [], [], [], [], []] // 每个数组元素代表一天
   for (let i = 0; i < filter.length; i++) {
